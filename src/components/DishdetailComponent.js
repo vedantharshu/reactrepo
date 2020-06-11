@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardImg, Breadcrumb, BreadcrumbItem, CardText, CardBody, CardTitle } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import Comment from './CommentForm';
 
     const DishDetail= (props) => {
         if(props.dish != null){
@@ -24,6 +25,7 @@ import { Link } from 'react-router-dom';
                              <h4>Comments</h4>
                              .<ul className="list-unstyled">
                              <RenderComments comments = {props.comments} />
+                             <Comment />
                              </ul>
                         </div>
                     
@@ -43,6 +45,7 @@ import { Link } from 'react-router-dom';
                         <p width="100%">{comment.comment}</p>
                         <p>--{comment.author}, {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day:'2-digit'}).format(new Date(Date.parse(comment.date)))}</p>
                     </div>
+
                 );
         });
         return (cmnt);
