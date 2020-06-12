@@ -2,6 +2,9 @@ import React ,{ Component } from 'react';
 import { Card, CardImg, Breadcrumb, BreadcrumbItem, CardText, CardBody, CardTitle, Button, Modal, ModalHeader, ModalBody, Row, Label } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Comments } from '../redux/comments';
+import { addComment } from '../redux/ActionCreators';
+import { Loading } from './LoadingComponent';
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
@@ -24,8 +27,7 @@ class Comment extends Component{
       }
     handleLogin(values) {
         this.toggleModal();
-        console.log('Current State is: ' + JSON.stringify(values));
-        alert('Current State is: ' + JSON.stringify(values));
+        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
         //event.preventDefault();
 
     }
@@ -40,7 +42,7 @@ class Comment extends Component{
                 <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                 <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
                 <ModalBody>
-                <LocalForm onSubmit={(v) => this.handleLogin(v)}>
+                <LocalForm onSubmit={(values) => this.handleLogin(values)}>
                         <Row className="form-group">
                             <Label htmlFor="rating">Rating</Label>
                                     <Control.select model=".rating" id="rating" name="rating"
@@ -53,16 +55,16 @@ class Comment extends Component{
                                     </Control.select>
                         </Row>
                         <Row className="form-group">
-                            <Label htmlFor="username">Your Name</Label>
-                            <Control.text model=".username" id="username" name="username"
-                                placeholder="username"
+                            <Label htmlFor="author">Your Name</Label>
+                            <Control.text model=".author" id="author" name="author"
+                                placeholder="author"
                                 className="form-control" 
                                 validators={{
                                     required, minLength: minLength(3), maxLength: maxLength(15)
                                 }} />
                                 <Errors
                                         className="text-danger"
-                                        model=".username"
+                                        model=".author"
                                         show="touched"
                                         messages={{
                                             required: 'Required',
@@ -72,8 +74,8 @@ class Comment extends Component{
                                 />
                         </Row>
                         <Row className="form-group">
-                                <Label htmlFor="message" md={2}>Comment</Label>
-                                    <Control.textarea model=".message" id="message" name="message"
+                                <Label htmlFor="comment" md={2}>Comment</Label>
+                                    <Control.textarea model=".comment" id="comment" name="comment"
                                         rows="6"
                                         className="form-control" />
                             </Row>
@@ -87,7 +89,25 @@ class Comment extends Component{
 
 }
     const DishDetail= (props) => {
-        if(props.dish != null){
+        if (props.isLoading) {
+            return(
+                <div className="container">
+                    <div className="row">            
+                        <Loading />
+                    </div>
+                </div>
+            );
+        }
+        else if (props.errMess) {
+            return(
+                <div className="container">
+                    <div className="row">            
+                        <h4>{props.errMess}</h4>
+                    </div>
+                </div>
+            );
+        }
+        else if (props.dish != null){
             return(
                     <div class = "container">
                          <div className="row">
@@ -101,37 +121,44 @@ class Comment extends Component{
                         </div>                
                         </div>
                         <div className="row">
-                            
-                                <RenderDish dish={props.dish} />
-                            
-                            <div className="col-12 col-md-5 m-1 ">
-                             <h4>Comments</h4>
-                             .<ul className="list-unstyled">
-                             <RenderComments comments = {props.comments} />
-                             <Comment />
-                             </ul>
-                        </div>
-                    
+                            <RenderDish dish={props.dish} />
+                            <RenderComments comments={props.comments}
+                                addComment={props.addComment}
+                                dishId={props.dish.id}
+                            />
                         </div>
                     </div>
-                );
+                 );
         }
         else{
             return(
                 <div></div>);
         }
     }    
-    function RenderComments({comments}){
-        const cmnt=comments.map((comment) => {
+    function RenderComments({comments, addComment, dishId}) {
+        if(comments!=null){
             return(
-                    <div key={comment.id} className="row" >
+                <div className="col-12 col-md-5 m-1">
+                <h4>Comments</h4>
+                <ul className="list-unstyled">
+                    {comments.map((comment)=>{
+                        return(
+                            <li key={comment.id} className="row" >
                         <p width="100%">{comment.comment}</p>
                         <p>--{comment.author}, {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day:'2-digit'}).format(new Date(Date.parse(comment.date)))}</p>
-                    </div>
-
+                    </li>    
+                        );
+                    })}
+                </ul>
+                <Comment dishId={dishId} addComment={addComment} />
+                </div>
                 );
-        });
-        return (cmnt);
+        }
+        else{
+            return(
+            <div></div>
+            );
+        }
     }
     function RenderDish({dish}) {
         if (dish != null)
