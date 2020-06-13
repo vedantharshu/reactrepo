@@ -3,7 +3,7 @@ import { Card, CardImg, Breadcrumb, BreadcrumbItem, CardText, CardBody, CardTitl
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
 import { Comments } from '../redux/comments';
-import { addComment } from '../redux/ActionCreators';
+import { postComment } from '../redux/ActionCreators';
 import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/baseUrl';
 
@@ -28,7 +28,7 @@ class Comment extends Component{
       }
     handleLogin(values) {
         this.toggleModal();
-        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
+        this.props.postComment(this.props.dishId, values.rating, values.author, values.comment);
         //event.preventDefault();
 
     }
@@ -124,7 +124,7 @@ class Comment extends Component{
                         <div className="row">
                             <RenderDish dish={props.dish} />
                             <RenderComments comments={props.comments}
-                                addComment={props.addComment}
+                                postComment={props.postComment}
                                 dishId={props.dish.id}
                             />
                         </div>
@@ -136,7 +136,7 @@ class Comment extends Component{
                 <div></div>);
         }
     }    
-    function RenderComments({comments, addComment, dishId}) {
+    function RenderComments({comments, postComment, dishId}) {
         if(comments!=null){
             return(
                 <div className="col-12 col-md-5 m-1">
@@ -151,7 +151,7 @@ class Comment extends Component{
                         );
                     })}
                 </ul>
-                <Comment dishId={dishId} addComment={addComment} />
+                <Comment dishId={dishId} postComment={postComment} />
                 </div>
                 );
         }
