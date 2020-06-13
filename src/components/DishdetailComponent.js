@@ -5,6 +5,7 @@ import { Control, LocalForm, Errors } from 'react-redux-form';
 import { Comments } from '../redux/comments';
 import { addComment } from '../redux/ActionCreators';
 import { Loading } from './LoadingComponent';
+import { baseUrl } from '../shared/baseUrl';
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
@@ -164,7 +165,7 @@ class Comment extends Component{
         if (dish != null)
             return(
                 <Card className="col-lg-5">
-                    <CardImg top src={dish.image} alt={dish.name} />
+                    <CardImg top src={baseUrl + dish.image} alt={dish.name} />
                     <CardBody >
                       <CardTitle>{dish.name}</CardTitle>
                       <CardText>{dish.description}</CardText>
