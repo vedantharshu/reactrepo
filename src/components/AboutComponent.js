@@ -1,40 +1,11 @@
 import React from 'react';
 import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Media } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { Loading } from './LoadingComponent';
+import { baseUrl } from '../shared/baseUrl';
 
 function About(props) {
-
-    
-
-
-    function RenderLeader({leaders}){
-            const ldr = props.leaders.map((leader) => {
-            return (
-                    <Media>
-                         <Media left href="#">
-                            <Media object className="mr-5" src={leader.image} alt="Generic placeholder image" />
-                         </Media>
-                        <Media body>
-                            <Media heading>
-                                {leader.name}
-                            </Media>
-                                {leader.designation}
-                            <Media className="mb-5 mt-3">
-                                {leader.description}
-                            </Media>
-                        </Media>
-                    </Media>
-            );
-        });
-            return (ldr);
-    }
-
-
-
-
-
-
-    return(
+    return (
         <div className="container">
             <div className="row">
                 <Breadcrumb>
@@ -44,7 +15,7 @@ function About(props) {
                 <div className="col-12">
                     <h3>About Us</h3>
                     <hr />
-                </div>                
+                </div>
             </div>
             <div className="row row-content">
                 <div className="col-12 col-md-6">
@@ -90,12 +61,49 @@ function About(props) {
                 </div>
                 <div className="col-12">
                     <Media list>
-                        <RenderLeader leaders={props.leaders}/>
+                        <RenderLeader leaders={props.leaders} 
+                                        />
                     </Media>
                 </div>
             </div>
         </div>
     );
+}
+
+
+function RenderLeader({leaders}) {
+
+    if (leaders.isLoading) {
+        return(
+                <Loading />
+        );
+    }
+    else if (leaders.errMess) {
+        return(
+                <h4>{leaders.errMess}</h4>
+        );
+    }
+    else{
+    const ldr = leaders.leaders.map((leader) => {
+        return (
+            <Media>
+                <Media left href="#">
+                    <Media object className="mr-5" src={baseUrl+leader.image} alt={leader.designation} />
+                </Media>
+                <Media body>
+                    <Media heading>
+                        {leader.name}
+                    </Media>
+                    {leader.designation}
+                    <Media className="mb-5 mt-3">
+                        {leader.description}
+                    </Media>
+                </Media>
+            </Media>
+        );
+    });
+    return (ldr);
+    }
 }
 
 export default About;    
